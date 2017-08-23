@@ -33,7 +33,11 @@ namespace api
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
             
             services.AddDbContext<ApiContext>();
-                
+
+            services.AddIdentity<UserEntity, IdentityRole>()
+                .AddEntityFrameworkStores<ApiContext>()
+                .AddDefaultTokenProviders();
+
             services.AddAuthentication(o =>
                     {
                         o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -50,11 +54,7 @@ namespace api
                             ValidIssuer = Configuration.GetSection("AppConfiguration:SiteUrl").Value
                         };
                     });
-                    
-            services.AddIdentity<UserEntity, IdentityRole>()
-                .AddEntityFrameworkStores<ApiContext>()
-                .AddDefaultTokenProviders();
-                
+
             services.AddMvc();
             
             // Configure Identity
@@ -74,6 +74,22 @@ namespace api
                 // User settings
                 options.User.RequireUniqueEmail = true;
             });
+
+            //services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.LoginPath = null;
+            //    options.Events.OnRedirectToLogin = async (context) =>
+            //    {
+            //        if (context.Request.Path.StartsWithSegments("/api") && context.Response.StatusCode == 200)
+            //        {
+            //            context.Response.StatusCode = 401;
+            //            await Task.FromResult<object>(null);
+            //        }
+
+            //        context.Response.Redirect(context.RedirectUri);
+            //        await Task.FromResult<object>(null);
+            //    };
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

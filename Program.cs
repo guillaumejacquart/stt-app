@@ -20,6 +20,11 @@ namespace api
         public static IWebHost BuildWebHost(string[] args)
         {
             var port = Environment.GetEnvironmentVariable("PORT");
+            if (string.IsNullOrEmpty(port))
+            {
+                port = "3000";
+            }
+
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseUrls($"http://*:{port};")
