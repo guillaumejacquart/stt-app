@@ -1,17 +1,22 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace api.Models
 {
-    public class ApiContext : DbContext
+    public class ApiContext : IdentityDbContext<UserEntity>
     {
-        public DbSet<UserEntity> Users { get; set; }
         public DbSet<Configuration> Configurations { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=api.db");
+        }
+        
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
         }
     }
 
@@ -24,7 +29,5 @@ namespace api.Models
     {
         public int ConfigurationId { get; set; }
         public string Name { get; set; }
-
-        public UserEntity UserEntity { get; set; }
     }
 }
