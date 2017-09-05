@@ -11,11 +11,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using api.Models;
 using api.ViewModels;
-
+using Microsoft.AspNetCore.Http;
 
 namespace api.Controllers
 {
-    [Route("api/accounts")]
+    [Route("api/account")]
     public class AccountController : Controller
     {
         private readonly UserManager<UserEntity> _userManager;
@@ -82,9 +82,40 @@ namespace api.Controllers
             });
         }
 
+        [HttpGet("profile")]
+        public async Task<IActionResult> Profile()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByNameAsync(GetCurrentUsername(HttpContext));
+
+            return Ok(user);
+        }
+
+        [HttpPut("profile")]
+        public async Task<IActionResult> Profile([FromBody] UserProfile model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByNameAsync(GetCurrentUsername(HttpContext));
+            user.ApiAiClientToken = model.ApiAiClientToken;
+            user.ApiAiDeveloperToken = model.ApiAiDeveloperToken;
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok();
+        }
+
         /// <summary>
         /// Generate JWT Token based on valid User
         /// </summary>
+        [NonAction]
         private async Task<JwtSecurityToken> GetJwtSecurityToken(UserEntity user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
@@ -97,7 +128,8 @@ namespace api.Controllers
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appConfiguration.Value.Key)), SecurityAlgorithms.HmacSha256)
             );
         }
-        
+
+        [NonAction]
         private static IEnumerable<Claim> GetTokenClaims(UserEntity user)
         {
             return new List<Claim>
@@ -105,6 +137,12 @@ namespace api.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName)
             };
+        }
+
+        [NonAction]
+        public static string GetCurrentUsername(HttpContext context)
+        {
+            return context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }

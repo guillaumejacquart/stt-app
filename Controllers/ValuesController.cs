@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace api.Controllers
 {
     [Authorize]
-    [Route("api/values")]
+    [Route("api/value")]
     public class ValuesController : Controller
     {
         // GET api/values

@@ -22,12 +22,21 @@ namespace api.Models
 
     public class UserEntity : IdentityUser
     {
+        public string ApiAiClientToken { get; set; }
+        public string ApiAiDeveloperToken { get; set; }
         public List<Configuration> Configurations { get; set; }
+
+        public UserEntity()
+        {
+            Configurations = new List<Configuration>();
+        }
     }
 
     public class Configuration
     {
         public int ConfigurationId { get; set; }
         public string Name { get; set; }
+        public string Action { get; set; }
+        public string UrlTriggered { get; set; }
     }
 }

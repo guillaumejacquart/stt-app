@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.PlatformAbstractions;
 using api.Models;
+using System.Security.Claims;
 
 namespace api
 {
@@ -74,22 +75,6 @@ namespace api
                 // User settings
                 options.User.RequireUniqueEmail = true;
             });
-
-            //services.ConfigureApplicationCookie(options =>
-            //{
-            //    options.LoginPath = null;
-            //    options.Events.OnRedirectToLogin = async (context) =>
-            //    {
-            //        if (context.Request.Path.StartsWithSegments("/api") && context.Response.StatusCode == 200)
-            //        {
-            //            context.Response.StatusCode = 401;
-            //            await Task.FromResult<object>(null);
-            //        }
-
-            //        context.Response.Redirect(context.RedirectUri);
-            //        await Task.FromResult<object>(null);
-            //    };
-            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
